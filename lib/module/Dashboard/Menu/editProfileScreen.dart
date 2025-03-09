@@ -1,5 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:spendwise_app/aLocalAndRemoteData/local/constant.dart';
+import 'package:spendwise_app/data/appAssets.dart';
+import 'package:spendwise_app/data/appButtons.dart';
 import 'package:spendwise_app/data/appColors.dart';
+import 'package:spendwise_app/data/appFields.dart';
+import 'package:spendwise_app/data/appValidation.dart';
 
 class EditProfileScreen extends StatefulWidget {
   const EditProfileScreen({super.key});
@@ -10,31 +15,26 @@ class EditProfileScreen extends StatefulWidget {
 
 class _EditProfileScreenState extends State<EditProfileScreen> {
   final _formKey = GlobalKey<FormState>();
+  final TextEditingController _nameController = TextEditingController();
 
-  // Controllers prefilled with current user data
-  final TextEditingController _nameController = TextEditingController(text: "John Doe");
-  final TextEditingController _emailController = TextEditingController(text: "johndoe@example.com");
-  final TextEditingController _phoneController = TextEditingController(text: "123-456-7890");
-
-  // Placeholder for profile image file or URL
-  String profileImage = 'assets/images/user.png';
+  @override
+  void initState() {
+    _nameController.text = constant.userName;
+    super.initState();
+  }
 
   void _saveProfile() {
     if (_formKey.currentState!.validate()) {
-      // Implement save logic here:
-      // For example, update profile details on your backend or locally.
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Profile Updated')),
       );
-      Navigator.pop(context);
+      // Navigator.pop(context);
     }
   }
 
   @override
   void dispose() {
     _nameController.dispose();
-    _emailController.dispose();
-    _phoneController.dispose();
     super.dispose();
   }
 
@@ -48,14 +48,15 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           key: _formKey,
           child: Column(
             children: [
-              // Profile Picture with edit option
+              const SizedBox(height: 20),
+
               Center(
                 child: Stack(
                   children: [
                     CircleAvatar(
-                      radius: 60,
+                      radius: 80,
                       backgroundColor: appColors.blackColor,
-                      backgroundImage: AssetImage(profileImage),
+                      backgroundImage: AssetImage(appAssets.dummyUserImage),
                     ),
                     Positioned(
                       bottom: 0,
@@ -65,61 +66,32 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                         radius: 18,
                         child: IconButton(
                           icon: const Icon(Icons.edit, color: Colors.white, size: 18),
-                          onPressed: () {
-                            // Implement image picker logic here
-                          },
+                          onPressed: () {},
                         ),
                       ),
                     ),
                   ],
                 ),
               ),
-              const SizedBox(height: 20),
+              const SizedBox(height: 50),
+
               // Name Field
+
               TextFormField(
                 controller: _nameController,
-                decoration: const InputDecoration(
-                  labelText: "Name",
-                  border: OutlineInputBorder(),
-                ),
-                validator: (value) => value == null || value.isEmpty ? "Enter your name" : null,
-              ),
-              const SizedBox(height: 16),
-              // Email Field
-              TextFormField(
-                controller: _emailController,
-                decoration: const InputDecoration(
-                  labelText: "Email",
-                  border: OutlineInputBorder(),
-                ),
-                validator: (value) {
-                  if (value == null || value.isEmpty) return "Enter your email";
-                  // Add further email validation if needed
-                  return null;
-                },
-              ),
-              const SizedBox(height: 16),
-              // Phone Field (optional)
-              TextFormField(
-                controller: _phoneController,
-                decoration: const InputDecoration(
-                  labelText: "Phone",
-                  border: OutlineInputBorder(),
-                ),
+                decoration: appFields.buildInputWithBlackBorderDecoration('Name', Icons.person),
+                validator: appValidations.nameValidator,
+                onTapOutside: (event) => FocusScope.of(context).unfocus(),
               ),
               const SizedBox(height: 30),
-              // Save Profile Button
-              ElevatedButton(
-                onPressed: _saveProfile,
-                style: ElevatedButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 15),
-                  textStyle: const TextStyle(fontSize: 16),
-                ),
-                child: const Text("Save"),
-              ),
             ],
           ),
         ),
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+      floatingActionButton: Padding(
+        padding: const EdgeInsets.only(left: 15, right: 15, bottom: 30),
+        child: appButton.redFullWidthButton('Save', _saveProfile),
       ),
     );
   }

@@ -1,9 +1,14 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
+import 'package:spendwise_app/aLocalAndRemoteData/remote/supaBaseFunctions.dart';
 import 'package:spendwise_app/data/appButtons.dart';
 import 'package:spendwise_app/data/appColors.dart';
+import 'package:spendwise_app/data/appCommonFunctions.dart';
 import 'package:spendwise_app/data/appFields.dart';
 import 'package:spendwise_app/data/appGradients.dart';
 import 'package:spendwise_app/data/appValidation.dart';
+import 'package:validator_regex/validator_regex.dart';
 
 class ForgetPasswordScreen extends StatefulWidget {
   const ForgetPasswordScreen({super.key});
@@ -13,34 +18,88 @@ class ForgetPasswordScreen extends StatefulWidget {
 }
 
 class _ForgetPasswordScreenState extends State<ForgetPasswordScreen> {
+  final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
   final _otpController = TextEditingController();
   final _newPasswordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
 
-  final _formKey = GlobalKey<FormState>();
   bool _isPasswordVisible = false;
   bool _isConfirmPasswordVisible = false;
-  bool _otpSent = false; // Track whether OTP has been sent
+  bool _otpSent = false;
 
-  void _sendOTP() {
-    if (_emailController.text.isNotEmpty && RegExp(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$').hasMatch(_emailController.text)) {
+  bool isSendOtpLoading = false;
+  bool isResetPasswordLoading = false;
+  Timer? resendTimer;
+  int remainingTime = 0;
+
+  Future<void> _sendOrResendOTP(bool isFromResend) async {
+    if (!isFromResend) {
+      if (!_formKey.currentState!.validate()) return;
+    }
+    if (!Validator.email(_emailController.text)) {
+      appCommonFunction.showSnackbar(message: 'Enter valid email', context: context);
+      return;
+    }
+
+    setState(() => isSendOtpLoading = true);
+
+    dynamic response = await supabaseFunctions.sendOrResendOTP(email: _emailController.text, context: context);
+    if (response == 'success') {
       setState(() {
         _otpSent = true;
+        remainingTime = 30;
       });
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('OTP Sent to Email')),
-      );
+      _startResendTimer();
     }
+
+    setState(() => isSendOtpLoading = false);
   }
 
-  void _resetPassword() {
-    if (_formKey.currentState!.validate()) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Password Reset Successfully!')),
-      );
+  Future<void> _resetPassword() async {
+    if (!_formKey.currentState!.validate()) return;
+
+    if (_newPasswordController.text.length < 6) {
+      appCommonFunction.showSnackbar(message: 'Password must be at least 6 characters long.', context: context);
+      return;
+    }
+    if (_newPasswordController.text != _confirmPasswordController.text) {
+      appCommonFunction.showSnackbar(message: 'Passwords do not match.', context: context);
+      return;
+    }
+
+    setState(() => isResetPasswordLoading = true);
+
+    dynamic response = await supabaseFunctions.resetPassword(
+      email: _emailController.text,
+      otp: _otpController.text,
+      newPassword: _newPasswordController.text,
+      context: context,
+    );
+    if (response == 'success') {
       Navigator.pop(context);
     }
+
+    setState(() => isResetPasswordLoading = false);
+  }
+
+  void _startResendTimer() {
+    resendTimer?.cancel();
+    resendTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      if (remainingTime == 0) {
+        timer.cancel();
+      } else {
+        setState(() {
+          remainingTime--;
+        });
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    resendTimer?.cancel();
+    super.dispose();
   }
 
   @override
@@ -86,13 +145,25 @@ class _ForgetPasswordScreenState extends State<ForgetPasswordScreen> {
                     style: TextStyle(color: appColors.whiteColor),
                     decoration: appFields.buildInputDecoration("Email", Icons.email),
                     validator: appValidations.emailValidator,
+                    readOnly: _otpSent,
                   ),
                   const SizedBox(height: 20),
 
                   // Send OTP Button
-
-                  !_otpSent ? appButton.whiteFullWidthButton('SEND OTP', _sendOTP) : Container(),
-                  _otpSent ? const SizedBox(height: 30) : Container(),
+                  isSendOtpLoading
+                      ? const Center(child: CircularProgressIndicator())
+                      : remainingTime > 0
+                          ? Center(
+                              child: Text(
+                                "Resend OTP in $remainingTime sec",
+                                style: TextStyle(color: appColors.whiteColor.withOpacity(0.7)),
+                              ),
+                            )
+                          : appButton.whiteFullWidthButton(
+                              _otpSent ? 'RESEND OTP' : 'SEND OTP',
+                              () => _otpSent ? _sendOrResendOTP(true) : _sendOrResendOTP(false),
+                            ),
+                  const SizedBox(height: 30),
 
                   // OTP & Password Fields (Only show if OTP is sent)
 
@@ -133,15 +204,15 @@ class _ForgetPasswordScreenState extends State<ForgetPasswordScreen> {
                       decoration: appFields.buildPasswordInputDecoration(
                         "Confirm Password",
                         Icons.lock,
-                        () => setState(() => _isPasswordVisible = !_isPasswordVisible),
-                        _isPasswordVisible,
+                        () => setState(() => _isConfirmPasswordVisible = !_isConfirmPasswordVisible),
+                        _isConfirmPasswordVisible,
                       ),
                       validator: passwordValidator,
                     ),
                     const SizedBox(height: 30),
 
                     // Reset Password Button
-                    appButton.whiteFullWidthButton('RESET PASSWORD', _resetPassword),
+                    isResetPasswordLoading ? const Center(child: CircularProgressIndicator()) : appButton.whiteFullWidthButton('RESET PASSWORD', _resetPassword),
                   ],
                 ],
               ),

@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:spendwise_app/aLocalAndRemoteData/local/constant.dart';
 import 'package:spendwise_app/data/appAssets.dart';
 import 'package:spendwise_app/data/appColors.dart';
 import 'package:spendwise_app/data/appMethods.dart';
+import 'package:spendwise_app/module/Dashboard.dart';
 import 'package:spendwise_app/module/auth/welcomeScreen.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -16,7 +18,7 @@ class _SplashScreenState extends State<SplashScreen> {
   void initState() {
     super.initState();
     Future.delayed(const Duration(seconds: 3), () {
-      AppMethods.navigate(context, const WelcomeScreen());
+      constant.isLoggedIn ? AppMethods.navigate(context, const DashboardScreen()) : AppMethods.navigate(context, const WelcomeScreen());
     });
   }
 

@@ -9,89 +9,32 @@ class MenuScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Using DefaultTabController to manage the tab state
     return DefaultTabController(
-      length: 4, // Four tabs: Profile, Settings, Support, Logout
+      length: 4,
       child: Scaffold(
         backgroundColor: appColors.greyColor.withOpacity(0.05),
         appBar: AppBar(
+          centerTitle: true,
+          automaticallyImplyLeading: false,
           title: const Text("Menu"),
           bottom: TabBar(
             indicatorColor: appColors.whiteColor,
-            tabs: [
-              Tab(
-                text: "Profile",
-                icon: Icon(Icons.person),
-              ),
-              Tab(
-                text: "Settings",
-                icon: Icon(Icons.settings),
-              ),
-              Tab(
-                text: "Support",
-                icon: Icon(Icons.help_outline),
-              ),
-              Tab(
-                text: "Logout",
-                icon: Icon(Icons.logout),
-              ),
+            tabs: const [
+              Tab(text: "Profile", icon: Icon(Icons.person)),
+              Tab(text: "Settings", icon: Icon(Icons.settings)),
+              Tab(text: "Support", icon: Icon(Icons.help_outline)),
+              Tab(text: "Logout", icon: Icon(Icons.logout)),
             ],
           ),
         ),
         body: TabBarView(
           children: [
-            // My Profile Tab
-            // Center(
-            //   child: Column(
-            //     mainAxisAlignment: MainAxisAlignment.center,
-            //     children: const [
-            //       Icon(Icons.person, size: 100, color: Colors.blue),
-            //       SizedBox(height: 20),
-            //       Text(
-            //         "My Profile",
-            //         style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-            //       ),
-            //     ],
-            //   ),
-            // ),
-            ProfileScreen(),
-            // Settings Tab
-            // Center(
-            //   child: Column(
-            //     mainAxisAlignment: MainAxisAlignment.center,
-            //     children: const [
-            //       Icon(Icons.settings, size: 100, color: Colors.orange),
-            //       SizedBox(height: 20),
-            //       Text(
-            //         "Settings",
-            //         style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-            //       ),
-            //     ],
-            //   ),
-            // ),
-            SettingsScreen(),
-            // Support Tab
-            // Center(
-            //   child: Column(
-            //     mainAxisAlignment: MainAxisAlignment.center,
-            //     children: const [
-            //       Icon(Icons.support_agent, size: 100, color: Colors.green),
-            //       SizedBox(height: 20),
-            //       Text(
-            //         "Support",
-            //         style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-            //       ),
-            //     ],
-            //   ),
-            // ),
-
-            SupportScreen(),
-            // Logout Tab
+            const ProfileScreen(),
+            const SettingsScreen(),
+            const SupportScreen(),
             Center(
               child: ElevatedButton.icon(
-                onPressed: () {
-                  // Implement your logout functionality here
-                },
+                onPressed: () {},
                 icon: const Icon(Icons.logout),
                 label: const Text("Logout"),
                 style: ElevatedButton.styleFrom(

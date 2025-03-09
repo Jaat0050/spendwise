@@ -79,6 +79,8 @@ class _TransactionScreenState extends State<TransactionScreen> with SingleTicker
     return Scaffold(
       backgroundColor: appColors.greyColor.withOpacity(0.05),
       appBar: AppBar(
+        centerTitle: true,
+        automaticallyImplyLeading: false,
         title: const Text("Transactions"),
         bottom: TabBar(
           controller: _tabController,

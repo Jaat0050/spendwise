@@ -49,7 +49,11 @@ class _AnalysisScreenState extends State<AnalysisScreen> {
 
     return Scaffold(
       backgroundColor: appColors.greyColor.withOpacity(0.05),
-      appBar: AppBar(title: const Text('Analysis')),
+      appBar: AppBar(
+        centerTitle: true,
+        automaticallyImplyLeading: false,
+        title: const Text('Analysis'),
+      ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(

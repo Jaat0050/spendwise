@@ -16,6 +16,21 @@ class AppButtons {
       ),
     );
   }
+
+  Widget redFullWidthButton(String buttonText, onpressed) {
+    return SizedBox(
+      width: double.infinity,
+      child: ElevatedButton(
+        onPressed: onpressed,
+        style: ElevatedButton.styleFrom(
+          padding: const EdgeInsets.symmetric(vertical: 14),
+          backgroundColor: appColors.primaryColor,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        ),
+        child: Text(buttonText, style: TextStyle(fontSize: 18, color: appColors.whiteColor)),
+      ),
+    );
+  }
 }
 
 AppButtons appButton = AppButtons();

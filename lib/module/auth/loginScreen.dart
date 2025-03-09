@@ -1,12 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:spendwise_app/aLocalAndRemoteData/remote/getUserData.dart';
+import 'package:spendwise_app/aLocalAndRemoteData/remote/supaBaseFunctions.dart';
 import 'package:spendwise_app/data/appButtons.dart';
 import 'package:spendwise_app/data/appColors.dart';
+import 'package:spendwise_app/data/appCommonFunctions.dart';
 import 'package:spendwise_app/data/appFields.dart';
 import 'package:spendwise_app/data/appGradients.dart';
 import 'package:spendwise_app/data/appMethods.dart';
 import 'package:spendwise_app/data/appValidation.dart';
+import 'package:spendwise_app/module/Dashboard.dart';
 import 'package:spendwise_app/module/auth/forgetPassword.dart';
 import 'package:spendwise_app/module/auth/signUpScreen.dart';
+import 'package:validator_regex/validator_regex.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -21,12 +26,29 @@ class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController _passwordController = TextEditingController();
 
   bool _isPasswordVisible = false;
+  bool _isButtonLoading = false;
 
-  void _login() {
+  Future<void> _login() async {
     if (_formKey.currentState!.validate()) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Logging in...')),
-      );
+      if (!Validator.email(_emailController.text)) {
+        appCommonFunction.showSnackbar(message: 'Enter valid email', context: context);
+        return;
+      }
+
+      if (_passwordController.text.length < 6) {
+        appCommonFunction.showSnackbar(message: 'Enter valid password', context: context);
+        return;
+      }
+
+      setState(() => _isButtonLoading = true);
+
+      dynamic response = await supabaseFunctions.logIn(email: _emailController.text, password: _passwordController.text, context: context);
+      if (response == 'success') {
+        getUserData.getUserData(context);
+        AppMethods.navigate(context, const DashboardScreen());
+      }
+
+      setState(() => _isButtonLoading = false);
     }
   }
 
@@ -62,6 +84,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     controller: _emailController,
                     style: TextStyle(color: appColors.whiteColor),
                     decoration: appFields.buildInputDecoration("Email", Icons.email),
+                    keyboardType: TextInputType.emailAddress,
                     validator: appValidations.emailValidator,
                   ),
                   const SizedBox(height: 20),
@@ -100,7 +123,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
                   // Login Button
 
-                  appButton.whiteFullWidthButton('LOGIN', _login),
+                  _isButtonLoading ? const Center(child: CircularProgressIndicator()) : appButton.whiteFullWidthButton('LOGIN', _login),
                   const SizedBox(height: 20),
 
                   // Sign Up Option

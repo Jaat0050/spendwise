@@ -3,9 +3,7 @@ import 'package:spendwise_app/data/appAssets.dart';
 import 'package:spendwise_app/data/appColors.dart';
 import 'package:spendwise_app/data/appGradients.dart';
 import 'package:spendwise_app/data/appMethods.dart';
-import 'package:spendwise_app/module/Dashboard.dart';
 import 'package:spendwise_app/module/auth/loginScreen.dart';
-import 'package:spendwise_app/module/Dashboard/Home/homePage.dart';
 
 class WelcomeScreen extends StatelessWidget {
   const WelcomeScreen({super.key});
@@ -79,8 +77,7 @@ class WelcomeScreen extends StatelessWidget {
 
               GestureDetector(
                 onTap: () {
-                  // AppMethods.navigate(context, const LoginScreen());
-                  AppMethods.navigate(context, DashboardScreen());
+                  AppMethods.navigate(context, const LoginScreen());
                 },
                 child: Container(
                   height: 70,

@@ -1,9 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:spendwise_app/aLocalAndRemoteData/remote/supaBaseFunctions.dart';
 import 'package:spendwise_app/data/appButtons.dart';
 import 'package:spendwise_app/data/appColors.dart';
+import 'package:spendwise_app/data/appCommonFunctions.dart';
 import 'package:spendwise_app/data/appFields.dart';
 import 'package:spendwise_app/data/appGradients.dart';
+import 'package:spendwise_app/data/appMethods.dart';
 import 'package:spendwise_app/data/appValidation.dart';
+import 'package:spendwise_app/module/Dashboard.dart';
+import 'package:validator_regex/validator_regex.dart';
 
 class SignUpScreen extends StatefulWidget {
   const SignUpScreen({super.key});
@@ -22,19 +27,43 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
   bool _isPasswordVisible = false;
   bool _isConfirmPasswordVisible = false;
-  String? _selectedGender;
+  // String? _selectedGender;
   bool _termsAccepted = false;
+  bool _isButtonLoading = false;
 
-  void _signUp() {
-    if (_formKey.currentState!.validate() && _termsAccepted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Account Created Successfully!')),
+  Future<void> _signUp() async {
+    if (_formKey.currentState!.validate()) {
+      if (!_termsAccepted) {
+        appCommonFunction.showSnackbar(message: 'Please accept the Terms and Conditions.', context: context);
+        return;
+      }
+      if (!Validator.email(_emailController.text)) {
+        appCommonFunction.showSnackbar(message: 'Please enter a valid email address.', context: context);
+        return;
+      }
+      if (_passwordController.text.length < 6) {
+        appCommonFunction.showSnackbar(message: 'Password must be at least 6 characters long.', context: context);
+        return;
+      }
+      if (_passwordController.text != _confirmPasswordController.text) {
+        appCommonFunction.showSnackbar(message: 'Passwords do not match.', context: context);
+        return;
+      }
+
+      setState(() => _isButtonLoading = true);
+
+      dynamic response = await supabaseFunctions.signUp(
+        name: _nameController.text,
+        email: _emailController.text,
+        password: _passwordController.text,
+        context: context,
       );
-      // Navigate to Home or Login Screen
-    } else if (!_termsAccepted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please accept Terms and Conditions')),
-      );
+
+      if (response == 'success') {
+        AppMethods.navigate(context, const DashboardScreen());
+      }
+
+      setState(() => _isButtonLoading = false);
     }
   }
 
@@ -91,26 +120,27 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     style: TextStyle(color: appColors.whiteColor),
                     decoration: appFields.buildInputDecoration("Email", Icons.email),
                     validator: appValidations.emailValidator,
+                    keyboardType: TextInputType.emailAddress,
                   ),
                   const SizedBox(height: 20),
 
                   // Gender Dropdown
 
-                  DropdownButtonFormField<String>(
-                    dropdownColor: appColors.blackColor.withOpacity(0.87),
-                    value: _selectedGender,
-                    style: TextStyle(color: appColors.whiteColor),
-                    decoration: appFields.buildInputDecoration("Gender", Icons.wc),
-                    items: ["Male", "Female", "Other"]
-                        .map((gender) => DropdownMenuItem(
-                              value: gender,
-                              child: Text(gender, style: TextStyle(color: appColors.whiteColor)),
-                            ))
-                        .toList(),
-                    onChanged: (value) => setState(() => _selectedGender = value),
-                    validator: (value) => value == null ? "Select your gender" : null,
-                  ),
-                  const SizedBox(height: 20),
+                  // DropdownButtonFormField<String>(
+                  //   dropdownColor: appColors.blackColor.withOpacity(0.87),
+                  //   value: _selectedGender,
+                  //   style: TextStyle(color: appColors.whiteColor),
+                  //   decoration: appFields.buildInputDecoration("Gender", Icons.wc),
+                  //   items: ["Male", "Female", "Other"]
+                  //       .map((gender) => DropdownMenuItem(
+                  //             value: gender,
+                  //             child: Text(gender, style: TextStyle(color: appColors.whiteColor)),
+                  //           ))
+                  //       .toList(),
+                  //   onChanged: (value) => setState(() => _selectedGender = value),
+                  //   validator: (value) => value == null ? "Select your gender" : null,
+                  // ),
+                  // const SizedBox(height: 20),
 
                   // Password Field
 
@@ -167,7 +197,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   ),
                   const SizedBox(height: 20),
 
-                  appButton.whiteFullWidthButton('SIGN UP', _signUp),
+                  _isButtonLoading ? const Center(child: CircularProgressIndicator()) : appButton.whiteFullWidthButton('SIGN UP', _signUp),
                   const SizedBox(height: 20),
 
                   Row(

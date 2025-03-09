@@ -37,7 +37,11 @@ class _HomeScreenState extends State<HomeScreen> {
 
     return Scaffold(
       backgroundColor: appColors.greyColor.withOpacity(0.05),
-      appBar: AppBar(automaticallyImplyLeading: false, title: const Text("SpendWise"), centerTitle: true),
+      appBar: AppBar(
+        centerTitle: true,
+        automaticallyImplyLeading: false,
+        title: const Text("SpendWise"),
+      ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
