@@ -1,5 +1,3 @@
-import 'dart:ffi';
-
 import 'package:shared_preferences/shared_preferences.dart';
 
 class SharedPreferencesHelper {
@@ -7,9 +5,12 @@ class SharedPreferencesHelper {
 
   static String userId = 'USERID';
   static String userName = 'USERNAME';
+  static String userNameFirstLetter = 'USERNAMEFIRSTLETTER';
   static String userEmail = 'USEREMAIL';
   static String accountCreated = 'ACCOUNTCREATED';
   static String totalBalance = 'TOTALBALANCE';
+  static String avatarId = 'AVATARID';
+  static String avatarURL = 'AVATARURL';
   static String numberOfTransaction = 'NUMBEROFTRANSACTION';
   static String isLoggedIn = 'ISLOGGEDIN';
 
@@ -44,6 +45,16 @@ class SharedPreferencesHelper {
     return _prefs.getString(userName) ?? '';
   }
 
+  //-------------------------------------------------------------
+
+  static void setUserNameFirstLetter({required String letter}) {
+    _prefs.setString(userNameFirstLetter, letter);
+  }
+
+  static String getUserNameFirstLetter() {
+    return _prefs.getString(userNameFirstLetter) ?? "";
+  }
+
   //---------------------------------------------------------------
 
   static void setUserEmail({required String email}) {
@@ -72,6 +83,26 @@ class SharedPreferencesHelper {
 
   static int getNumberOfTransaction() {
     return _prefs.getInt(numberOfTransaction) ?? 0;
+  }
+
+  //---------------------------------------------------------------
+
+  static void setUserAvatarId({required String id}) {
+    _prefs.setString(avatarId, id);
+  }
+
+  static String getUserAvatarId() {
+    return _prefs.getString(avatarId) ?? '';
+  }
+
+  //---------------------------------------------------------------
+
+  static void setUserAvatarURL({required String url}) {
+    _prefs.setString(avatarURL, url);
+  }
+
+  static String getUserAvatarURL() {
+    return _prefs.getString(avatarURL) ?? '';
   }
 
   //---------------------------------------------------------------

@@ -4,12 +4,18 @@ import 'package:spendwise_app/aLocalAndRemoteData/local/constant.dart';
 import 'package:spendwise_app/data/appAssets.dart';
 import 'package:spendwise_app/data/appColors.dart';
 import 'package:spendwise_app/data/appCommonFunctions.dart';
+import 'package:spendwise_app/data/appCommonWidgets.dart';
 import 'package:spendwise_app/data/appMethods.dart';
 import 'package:spendwise_app/module/Dashboard/Menu/editProfileScreen.dart';
 
-class ProfileScreen extends StatelessWidget {
+class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
 
+  @override
+  State<ProfileScreen> createState() => _ProfileScreenState();
+}
+
+class _ProfileScreenState extends State<ProfileScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -19,13 +25,7 @@ class ProfileScreen extends StatelessWidget {
           children: [
             const SizedBox(height: 40),
 
-            Center(
-              child: CircleAvatar(
-                radius: 80,
-                backgroundColor: appColors.blackColor,
-                backgroundImage: AssetImage(appAssets.dummyUserImage),
-              ),
-            ),
+            appCommonWidget.circularImageViewBuilder(imageLink: constant.avatarUrl, radius: 160, iconSize: 40),
             const SizedBox(height: 30),
 
             Text(
@@ -66,7 +66,9 @@ class ProfileScreen extends StatelessWidget {
 
             ElevatedButton(
               onPressed: () {
-                AppMethods.navigate(context, const EditProfileScreen());
+                AppMethods.navigate(context, const EditProfileScreen()).then((value) {
+                  setState(() {});
+                });
               },
               style: ElevatedButton.styleFrom(
                 padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 15),
@@ -77,20 +79,21 @@ class ProfileScreen extends StatelessWidget {
 
             Spacer(),
 
-            Padding(
-              padding: EdgeInsets.only(bottom: 15),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text('JOINED :', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
-                  SizedBox(width: 10),
-                  Text(
-                    DateFormat("dd MMMM, yyyy").format(DateTime.parse(constant.accountCreated)),
-                    style: TextStyle(fontSize: 16, color: appColors.primaryColor, fontWeight: FontWeight.bold),
-                  ),
-                ],
+            if (constant.accountCreated.isNotEmpty)
+              Padding(
+                padding: EdgeInsets.only(bottom: 15),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text('JOINED :', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                    SizedBox(width: 10),
+                    Text(
+                      DateFormat("dd MMMM, yyyy").format(DateTime.parse(constant.accountCreated)),
+                      style: TextStyle(fontSize: 16, color: appColors.primaryColor, fontWeight: FontWeight.bold),
+                    ),
+                  ],
+                ),
               ),
-            ),
           ],
         ),
       ),

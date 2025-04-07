@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:spendwise_app/aLocalAndRemoteData/local/constant.dart';
+import 'package:spendwise_app/aLocalAndRemoteData/local/shared_pref_helper.dart';
 import 'package:spendwise_app/data/appColors.dart';
 import 'package:intl/intl.dart';
 
@@ -52,6 +54,53 @@ class AppCommonFunction {
   String _formatDoubleCurrency(double value) {
     final formatter = NumberFormat("#", "en_EN");
     return getCurrency() + formatter.format(value);
+  }
+
+  //==========================save App Data===============================//
+
+  void saveAppDataFunction() {
+    constant.userId = SharedPreferencesHelper.getUserId();
+    constant.userName = SharedPreferencesHelper.getUserName();
+    constant.userEmail = SharedPreferencesHelper.getUserEmail();
+    constant.totalBalance = SharedPreferencesHelper.getTotalBalance();
+    constant.numberOfTransaction = SharedPreferencesHelper.getNumberOfTransaction();
+    constant.accountCreated = SharedPreferencesHelper.getUserAccountCreated();
+    constant.avatarId = SharedPreferencesHelper.getUserAvatarId();
+    constant.avatarUrl = SharedPreferencesHelper.getUserAvatarURL();
+    constant.userNameFirstLetter = SharedPreferencesHelper.getUserNameFirstLetter();
+    constant.isLoggedIn = SharedPreferencesHelper.getIsLoggedIn();
+  }
+
+  //==========================delete App Data===============================//
+
+  void deleteAppDataFunction() {
+    constant.userId = '';
+    constant.userName = '';
+    constant.userEmail = '';
+    constant.avatarId = '';
+    constant.avatarUrl = '';
+    constant.accountCreated = '';
+    constant.userNameFirstLetter = "";
+    constant.isLoggedIn = false;
+    constant.totalBalance = 0;
+    constant.numberOfTransaction = 0;
+
+    SharedPreferencesHelper.clearShareCache();
+  }
+
+  //================================get and save name first initial===================================//
+
+  void getNameInitials() {
+    String tempFirstName = constant.userName.trim().split(' ').first;
+    String tempFirstNameFirstAlphabet = 'X';
+    String nameInatials = 'X';
+
+    if (tempFirstName != '') {
+      tempFirstNameFirstAlphabet = tempFirstName.split('').first;
+    }
+    nameInatials = tempFirstNameFirstAlphabet;
+    constant.userNameFirstLetter = nameInatials.toUpperCase();
+    SharedPreferencesHelper.setUserNameFirstLetter(letter: nameInatials.toUpperCase());
   }
 
   //

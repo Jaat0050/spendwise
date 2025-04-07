@@ -19,6 +19,8 @@ class GetUserData {
         SharedPreferencesHelper.setTotalBalance(total: data.totalBalance ?? 0);
         SharedPreferencesHelper.setNumberOfTransaction(transactions: data.numberOfTransaction ?? 0);
         SharedPreferencesHelper.setUserAccountCreated(date: data.created ?? '');
+        SharedPreferencesHelper.setUserAvatarId(id: data.avatarId ?? '');
+        SharedPreferencesHelper.setUserAvatarURL(url: data.avatarUrl ?? '');
         SharedPreferencesHelper.setIsLoggedIn(loggedIn: true);
 
         constant.userId = data.id ?? '';
@@ -27,9 +29,12 @@ class GetUserData {
         constant.totalBalance = data.totalBalance ?? 0;
         constant.numberOfTransaction = data.numberOfTransaction ?? 0;
         constant.accountCreated = data.created ?? '';
+        constant.avatarId = data.avatarId ?? '';
+        constant.avatarUrl = data.avatarUrl ?? '';
         constant.isLoggedIn = true;
 
         printSaveData();
+        appCommonFunction.getNameInitials();
       } else {
         appCommonFunction.showErrorSnackbar(message: 'Something went wrong plzz login again', context: context);
       }
@@ -57,6 +62,12 @@ class GetUserData {
     print('----------------------------numberOfTransaction------------------------------------------');
     print(SharedPreferencesHelper.getNumberOfTransaction());
     print(constant.numberOfTransaction);
+    print('----------------------------avatarId------------------------------------------');
+    print(SharedPreferencesHelper.getUserAvatarId());
+    print(constant.avatarId);
+    print('----------------------------avatarUrl------------------------------------------');
+    print(SharedPreferencesHelper.getUserAvatarURL());
+    print(constant.avatarUrl);
     print('----------------------------accountCreated------------------------------------------');
     print(SharedPreferencesHelper.getUserAccountCreated());
     print(constant.accountCreated);

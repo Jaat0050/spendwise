@@ -1,10 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:spendwise_app/aLocalAndRemoteData/local/constant.dart';
-import 'package:spendwise_app/data/appAssets.dart';
+import 'package:spendwise_app/aLocalAndRemoteData/remote/getUserData.dart';
 import 'package:spendwise_app/data/appButtons.dart';
 import 'package:spendwise_app/data/appColors.dart';
+import 'package:spendwise_app/data/appCommonFunctions.dart';
+import 'package:spendwise_app/data/appCommonWidgets.dart';
 import 'package:spendwise_app/data/appFields.dart';
 import 'package:spendwise_app/data/appValidation.dart';
+import 'package:spendwise_app/module/Dashboard/Menu/avatorSelectionDialog.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 class EditProfileScreen extends StatefulWidget {
   const EditProfileScreen({super.key});
@@ -16,6 +20,9 @@ class EditProfileScreen extends StatefulWidget {
 class _EditProfileScreenState extends State<EditProfileScreen> {
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _nameController = TextEditingController();
+  final supabase = Supabase.instance.client;
+  List avatarUrls = [];
+  bool isButtonLoading = false;
 
   @override
   void initState() {
@@ -23,13 +30,55 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     super.initState();
   }
 
-  void _saveProfile() {
+  void _saveProfile() async {
     if (_formKey.currentState!.validate()) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Profile Updated')),
-      );
-      // Navigator.pop(context);
+      setState(() {
+        isButtonLoading = true;
+      });
+      final userId = supabase.auth.currentUser?.id;
+      try {
+        await supabase.from('users').update({'name': _nameController.text}).eq('id', userId!).then((response) {
+              getUserData.getUserData(context).then((value) {
+                setState(() {});
+              });
+            });
+
+        appCommonFunction.showSnackbar(message: 'Name Updated', context: context);
+      } catch (e) {
+        print('==================catch error');
+        print(e.toString());
+      }
+
+      setState(() {
+        isButtonLoading = false;
+      });
     }
+  }
+
+  showAvatar(BuildContext context) {
+    showDialog(
+      context: context,
+      barrierDismissible: true,
+      builder: (BuildContext context) {
+        return AvatarSelectionDialog();
+      },
+    ).then((value) async {
+      if (value != null) {
+        final userId = supabase.auth.currentUser?.id;
+
+        try {
+          await supabase.from('users').update({'avatar_id': value['id'], 'avatar_url': value['url']}).eq('id', userId!).then((response) {
+                getUserData.getUserData(context).then((value) {
+                  setState(() {});
+                });
+              });
+          appCommonFunction.showSnackbar(message: 'Profile Picture Updated', context: context);
+        } catch (e) {
+          print('==================catch error');
+          print(e.toString());
+        }
+      }
+    });
   }
 
   @override
@@ -53,11 +102,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
               Center(
                 child: Stack(
                   children: [
-                    CircleAvatar(
-                      radius: 80,
-                      backgroundColor: appColors.blackColor,
-                      backgroundImage: AssetImage(appAssets.dummyUserImage),
-                    ),
+                    appCommonWidget.circularImageViewBuilder(imageLink: constant.avatarUrl, radius: 160, iconSize: 40),
                     Positioned(
                       bottom: 0,
                       right: 0,
@@ -66,7 +111,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                         radius: 18,
                         child: IconButton(
                           icon: const Icon(Icons.edit, color: Colors.white, size: 18),
-                          onPressed: () {},
+                          onPressed: () => showAvatar(context),
                         ),
                       ),
                     ),
@@ -91,7 +136,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       floatingActionButton: Padding(
         padding: const EdgeInsets.only(left: 15, right: 15, bottom: 30),
-        child: appButton.redFullWidthButton('Save', _saveProfile),
+        child: isButtonLoading ? SizedBox(height: 50, child: Center(child: CircularProgressIndicator())) : appButton.redFullWidthButton('Save', _saveProfile),
       ),
     );
   }

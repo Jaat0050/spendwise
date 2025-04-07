@@ -23,18 +23,18 @@ class WelcomeScreen extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              Align(
-                alignment: Alignment.centerLeft,
-                child: Container(
-                  width: 100,
-                  height: 100,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: appColors.whiteColor.withOpacity(0.2),
-                    image: DecorationImage(image: AssetImage(appAssets.appLogoIcon)),
-                  ),
-                ),
-              ),
+              // Align(
+              //   alignment: Alignment.centerLeft,
+              //   child: Container(
+              //     width: 100,
+              //     height: 100,
+              //     decoration: BoxDecoration(
+              //       shape: BoxShape.circle,
+              //       color: appColors.whiteColor.withOpacity(0.2),
+              //       image: DecorationImage(image: AssetImage(appAssets.appLogoIcon)),
+              //     ),
+              //   ),
+              // ),
               const Spacer(),
 
               // Placeholder for Animation or Image
@@ -45,7 +45,7 @@ class WelcomeScreen extends StatelessWidget {
                 decoration: BoxDecoration(
                   color: appColors.whiteColor.withOpacity(0.1),
                   borderRadius: BorderRadius.circular(20),
-                  image: DecorationImage(image: AssetImage(appAssets.welcomeAnimation)),
+                  image: DecorationImage(image: AssetImage(appAssets.appLogoIcon)),
                 ),
               ),
               const Spacer(),

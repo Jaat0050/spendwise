@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:spendwise_app/aLocalAndRemoteData/local/constant.dart';
+import 'package:spendwise_app/aLocalAndRemoteData/remote/getUserData.dart';
 import 'package:spendwise_app/data/appAssets.dart';
 import 'package:spendwise_app/data/appColors.dart';
 import 'package:spendwise_app/data/appMethods.dart';
@@ -17,6 +18,9 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
     super.initState();
+    if(constant.isLoggedIn){
+      getUserData.getUserData(context);
+    }
     Future.delayed(const Duration(seconds: 3), () {
       constant.isLoggedIn ? AppMethods.navigate(context, const DashboardScreen()) : AppMethods.navigate(context, const WelcomeScreen());
     });

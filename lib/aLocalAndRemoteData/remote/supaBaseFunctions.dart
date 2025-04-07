@@ -24,6 +24,8 @@ class SupabaseFunctions {
         password: password.trim(),
       );
 
+      print("--------------RESPONSE : \n${response.session}");
+
       if (response.session != null) {
         appCommonFunction.showSuccessSnackbar(message: "Login Successful", context: context);
         return 'success';
@@ -32,9 +34,13 @@ class SupabaseFunctions {
         return null;
       }
     } on AuthException catch (e) {
+      print('--------------------------LOGIN ERROR--------------------------');
+      print(e.toString());
       appCommonFunction.showErrorSnackbar(message: e.message, context: context);
       return null;
     } catch (e) {
+      print('--------------------------LOGIN CATCH ERROR--------------------------');
+      print(e.toString());
       appCommonFunction.showErrorSnackbar(message: "An error occurred. Please try again.", context: context);
       return null;
     }
@@ -52,6 +58,8 @@ class SupabaseFunctions {
       final AuthResponse response = await _supabase.auth.signUp(email: email.trim(), password: password);
       final User? user = response.user;
 
+      print("--------------RESPONSE : \n${response.user}");
+
       if (user != null) {
         try {
           await _supabase.from('users').insert({
@@ -61,20 +69,27 @@ class SupabaseFunctions {
             'created_at': DateTime.now().toIso8601String(),
           });
 
-          appCommonFunction.showSuccessSnackbar(message: 'Account created successfully! Redirecting...', context: context);
+          appCommonFunction.showSuccessSnackbar(message: 'Account created successfully!', context: context);
           return 'success';
         } catch (dbError) {
+          print('--------------------------dbError catch ERROR--------------------------');
+          print(dbError.toString());
           appCommonFunction.showErrorSnackbar(message: "Failed to save user data. Please try again.", context: context);
           return null;
         }
       } else {
+        print("Sign-up failed. Please try again.");
         appCommonFunction.showErrorSnackbar(message: "Sign-up failed. Please try again.", context: context);
         return null;
       }
     } on AuthException catch (e) {
+      print('--------------------------SIGNUP ERROR--------------------------');
+      print(e.toString());
       appCommonFunction.showErrorSnackbar(message: e.message, context: context);
       return null;
     } catch (e) {
+      print('--------------------------SIGNUP CATCH ERROR--------------------------');
+      print(e.toString());
       appCommonFunction.showErrorSnackbar(message: "An unexpected error occurred. Please try again.", context: context);
       return null;
     }
@@ -91,9 +106,13 @@ class SupabaseFunctions {
       appCommonFunction.showSuccessSnackbar(message: "OTP Sent to Email", context: context);
       return 'success';
     } on AuthException catch (e) {
+      print('--------------------------SENDORRESEND ERROR--------------------------');
+      print(e.toString());
       appCommonFunction.showErrorSnackbar(message: e.message, context: context);
       return null;
     } catch (e) {
+      print('--------------------------SENDORRESEND CATCH ERROR--------------------------');
+      print(e.toString());
       appCommonFunction.showErrorSnackbar(message: "Something went wrong. Try again.", context: context);
       return null;
     }
@@ -114,6 +133,8 @@ class SupabaseFunctions {
         type: OtpType.recovery,
       );
 
+      print("--------------RESPONSE : \n${response.session}");
+
       if (response.session == null) {
         appCommonFunction.showErrorSnackbar(message: "Invalid OTP. Try again.", context: context);
         return null;
@@ -123,9 +144,13 @@ class SupabaseFunctions {
       appCommonFunction.showSuccessSnackbar(message: "Password Reset Successfully!", context: context);
       return 'success';
     } on AuthException catch (e) {
+      print('--------------------------RESETPASSWORD ERROR--------------------------');
+      print(e.toString());
       appCommonFunction.showErrorSnackbar(message: e.message, context: context);
       return null;
     } catch (e) {
+      print('--------------------------RESETPASSWORD CATCH ERROR--------------------------');
+      print(e.toString());
       appCommonFunction.showErrorSnackbar(message: "Something went wrong. Try again.", context: context);
       return null;
     }
@@ -148,17 +173,26 @@ class SupabaseFunctions {
     try {
       final user = _supabase.auth.currentUser;
 
+      print("--------------USER : \n${user}");
+
       if (user == null) {
         appCommonFunction.showErrorSnackbar(message: "No user logged in", context: context);
         return null;
       }
-      
+
       final response = await _supabase.from('users').select().eq('id', user.id).single();
+
+      print("--------------RESPONSE : \n${response}");
+
       return response;
     } on PostgrestException catch (e) {
+      print('--------------------------USERDATA ERROR--------------------------');
+      print(e.toString());
       appCommonFunction.showErrorSnackbar(message: e.message, context: context);
       return null;
     } catch (e) {
+      print('--------------------------USERDATA CATCH ERROR--------------------------');
+      print(e.toString());
       appCommonFunction.showErrorSnackbar(message: "Failed to fetch user data", context: context);
       return null;
     }

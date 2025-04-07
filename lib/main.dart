@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:spendwise_app/aLocalAndRemoteData/local/shared_pref_helper.dart';
 import 'package:spendwise_app/data/appColors.dart';
+import 'package:spendwise_app/data/appCommonFunctions.dart';
 import 'package:spendwise_app/module/auth/splashScreen.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -15,6 +16,9 @@ void main() {
         url: 'https://puknulhbifrxlxqjlmta.supabase.co',
         anonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InB1a251bGhiaWZyeGx4cWpsbXRhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDE0NzA2MDAsImV4cCI6MjA1NzA0NjYwMH0.wjY-M9IA3X1TWQyjlD5NahbJ85IKTxqqx40xciA1aPU',
       );
+
+      appCommonFunction.saveAppDataFunction();
+
       runApp(const MyApp());
     } catch (e) {
       print('--------------------------error');

@@ -1,14 +1,21 @@
 import 'package:flutter/material.dart';
+import 'package:spendwise_app/aLocalAndRemoteData/local/constant.dart';
+import 'package:spendwise_app/aLocalAndRemoteData/local/shared_pref_helper.dart';
+import 'package:spendwise_app/aLocalAndRemoteData/remote/getUserData.dart';
 import 'package:spendwise_app/data/appColors.dart';
+import 'package:spendwise_app/data/appCommonFunctions.dart';
+import 'package:spendwise_app/data/appMethods.dart';
 import 'package:spendwise_app/module/Dashboard/Menu/profileScreen.dart';
 import 'package:spendwise_app/module/Dashboard/Menu/settingsScreen.dart';
 import 'package:spendwise_app/module/Dashboard/Menu/supportScreen.dart';
+import 'package:spendwise_app/module/auth/splashScreen.dart';
 
 class MenuScreen extends StatelessWidget {
   const MenuScreen({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    // getUserData.getUserData(context);
     return DefaultTabController(
       length: 4,
       child: Scaffold(
@@ -34,7 +41,10 @@ class MenuScreen extends StatelessWidget {
             const SupportScreen(),
             Center(
               child: ElevatedButton.icon(
-                onPressed: () {},
+                onPressed: () {
+                  appCommonFunction.deleteAppDataFunction();
+                  AppMethods.navigatePermanent(context, SplashScreen());
+                },
                 icon: const Icon(Icons.logout),
                 label: const Text("Logout"),
                 style: ElevatedButton.styleFrom(
